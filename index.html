@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 80%;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    input, select {
+      width: 100%;
+    }
+
+    button {
+      padding: 8px;
+      margin-top: 10px;
+    }
+
+    .popup {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .popup-content {
+      background: white;
+      padding: 20px;
+      width: 50%;
+      margin: auto;
+    }
+
+    .close-btn {
+      cursor: pointer;
+      float: right;
+      font-size: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<table id="userTable">
+  <thead>
+    <tr>
+      <th>Fname</th>
+      <th>Mname</th>
+      <th>Lname</th>
+      <th>Gender</th>
+      <th>Mno</th>
+      <th>Email</th>
+      <th>Category</th>
+      <th>Subcategory</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Table rows will be dynamically added here -->
+  </tbody>
+</table>
+
+<button onclick="showPopup()">+</button>
+
+<div id="userPopup" class="popup">
+  <div class="popup-content">
+    <span class="close-btn" onclick="hidePopup()">&times;</span>
+    <form onsubmit="addUser(event)">
+      <label for="fname">Fname:</label>
+      <input type="text" id="fname" required pattern="[a-zA-Z]+" title="Only letters are allowed">
+
+      <label for="mname">Mname:</label>
+      <input type="text" id="mname" required pattern="[a-zA-Z]+" title="Only letters are allowed">
+
+      <label for="lname">Lname:</label>
+      <input type="text" id="lname" required pattern="[a-zA-Z]+" title="Only letters are allowed">
+
+      <label>Gender:</label>
+      <label><input type="radio" name="gender" value="male"> Male</label>
+      <label><input type="radio" name="gender" value="female"> Female</label>
+      <label><input type="radio" name="gender" value="other"> Other</label>
+
+      <label for="mno">Mno:</label>
+      <input type="tel" id="mno" required pattern="[0-9]{10}" title="Must be a 10-digit number">
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" required>
+
+      <label for="category">Category:</label>
+      <select id="category" onchange="showSubcategory()">
+        <option value="job">Job</option>
+        <option value="student">Student</option>
+        <option value="other">Other</option>
+      </select>
+
+      <div id="subcategoryContainer" style="display: none;">
+        <label for="subcategory">Subcategory:</label>
+        <select id="subcategory"></select>
+      </div>
+
+      <button type="submit">Add User</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  function showPopup() {
+    document.getElementById('userPopup').style.display = 'flex';
+  }
+
+  function hidePopup() {
+    document.getElementById('userPopup').style.display = 'none';
+  }
+
+  function showSubcategory() {
+    const category = document.getElementById('category').value;
+    const subcategoryContainer = document.getElementById('subcategoryContainer');
+
+    if (category === 'student') {
+      subcategoryContainer.style.display = 'block';
+      const subcategorySelect = document.getElementById('subcategory');
+      subcategorySelect.innerHTML = '<option value="10th">10th</option><option value="12th">12th</option><option value="graduation">Graduation</option><option value="postgraduation">Post Graduation</option>';
+    } else if (category === 'job') {
+      subcategoryContainer.style.display = 'block';
+      const subcategorySelect = document.getElementById('subcategory');
+      subcategorySelect.innerHTML = '<option value="it">IT</option><option value="govt">Government</option><option value="others">Others</option>';
+    } else {
+      subcategoryContainer.style.display = 'none';
+    }
+  }
+
+  function addUser(event) {
+    event.preventDefault();
+
+    const fname = document.getElementById('fname').value;
+    const mname = document.getElementById('mname').value;
+    const lname = document.getElementById('lname').value;
+    const gender = document.querySelector('input[name="gender"]:checked').value;
+    const mno = document.getElementById('mno').value;
+    const email = document.getElementById('email').value;
+    const category = document.getElementById('category').value;
+    const subcategory = document.getElementById('subcategory').value;
+
+    const table = document.getElementById('userTable').getElementsByTagName('tbody')[0];
+    const newRow = table.insertRow(table.rows.length);
+
+    const cell1 = newRow.insertCell(0);
+    cell1.innerHTML = fname;
+
+    const cell2 = newRow.insertCell(1);
+    cell2.innerHTML = mname;
+
+    const cell3 = newRow.insertCell(2);
+    cell3.innerHTML = lname;
+
+    const cell4 = newRow.insertCell(3);
+    cell4.innerHTML = gender;
+
+    const cell5 = newRow.insertCell(4);
+    cell5.innerHTML = mno;
+
+    const cell6 = newRow.insertCell(5);
+    cell6.innerHTML = email;
+
+    const cell7 = newRow.insertCell(6);
+    cell7.innerHTML = category;
+
+    const cell8 = newRow.insertCell(7);
+    cell8.innerHTML = subcategory || '';
+
+    const cellAction = newRow.insertCell(-1);
+    cellAction.innerHTML = '<button onclick="deleteRow(this)">Delete</button>';
+
+    hidePopup();
+  }
+
+  function deleteRow(button) {
+    const row = button.parentNode.parentNode;
+    row.parentNode.removeChild(row);
+  }
+</script>
+
+</body>
+</html>
